@@ -303,8 +303,8 @@ const run = async (req) => {
         position: await row.findElement(By.xpath("./div[2]")).getText(),
         salary: await row.findElement(By.xpath("./div[3]")).getText(),
         interviewDate: await row.findElement(By.xpath("./div[4]")).getText(),
-        status: await row.findElement(By.xpath("./div[4]")).getText(),
-        notes: await row.findElement(By.xpath("./div[4]")).getText(),
+        status: await row.findElement(By.xpath("./div[5]")).getText(),
+        notes: await row.findElement(By.xpath("./div[6]")).getText(),
       });
     }
     const nextBtn = await driver.findElement(By.id("pagination-next-page"));
