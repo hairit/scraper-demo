@@ -4,7 +4,7 @@ import moment from "moment";
 import { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 
-export default function page() {
+export default function Page() {
   const [items, setItems] = useState([]);
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
