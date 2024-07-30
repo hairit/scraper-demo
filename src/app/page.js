@@ -13,7 +13,7 @@ export default function Home() {
   const [password, setPassword] = useState("Scraperdemo124");
   const [dateRange, setDateRange] = useState({});
   const [scraping, setScraping] = useState(false);
-  const scrapedURL = "http://localhost:3000/candidates";
+  const scrapedURL = `${window.location.href}candidates`;
 
   useEffect(() => {
     setError("");
@@ -129,11 +129,11 @@ export default function Home() {
             type="submit"
             disabled={scraping}
           >
-            {
-              scraping && <Spinner animation="border" role="status" size="sm">
-              <span className="visually-hidden">Loading...</span>
-            </Spinner>
-            }{" "}
+            {scraping && (
+              <Spinner animation="border" role="status" size="sm">
+                <span className="visually-hidden">Loading...</span>
+              </Spinner>
+            )}{" "}
             {scraping ? `Scraping` : `Start`}
           </Button>
           {error && <label className="error mt-3">{error}</label>}
