@@ -95,6 +95,8 @@ export default function page() {
       <DataTable
         columns={columns}
         data={items}
+        fixedHeaderScrollHeight="624px"
+        fixedHeader
         pagination
         paginationServer
         paginationTotalRows={totalCount}

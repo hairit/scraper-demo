@@ -1,17 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DatePicker } from "antd";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import Spinner from "react-bootstrap/Spinner";
 
 export default function Home() {
   const [error, setError] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("scraperdemo@gmail.com");
+  const [password, setPassword] = useState("Scraperdemo124");
   const [dateRange, setDateRange] = useState({});
+  const [scraping, setScraping] = useState(false);
   const scrapedURL = "http://localhost:3000/candidates";
+
+  useEffect(() => {
+    setError("");
+  }, [username, password, dateRange]);
 
   const onChange = (e) => {
     const value = e.target.value;
@@ -22,9 +28,9 @@ export default function Home() {
     }
   };
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    if (username !== "scraper" || password !== "Scraperdemo124") {
+    if (username !== "scraperdemo@gmail.com" || password !== "Scraperdemo124") {
       setError("Incorrect username or password, please try again.");
       return;
     }
@@ -32,7 +38,26 @@ export default function Home() {
       setError("Interview date range is required before scraping");
       return;
     }
-    console.log("Start");
+    setScraping(true);
+    await fetch(
+      `/api/scrape/run?url=${scrapedURL}&from=${dateRange.from.toISOString()}&to=${dateRange.to.toISOString()}`
+    )
+      .then((response) => response.text())
+      .then((text) => {
+        const blob = new Blob([text], { type: "text/csv" });
+        const urlObject = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = urlObject;
+        a.download = `scraped-data.csv`;
+
+        document.body.appendChild(a);
+        a.click();
+
+        document.body.removeChild(a);
+        URL.revokeObjectURL(urlObject);
+      });
+    setScraping(false);
   };
 
   const onChangeDateRange = async (a) => {
@@ -98,8 +123,18 @@ export default function Home() {
         </Form.Group>
 
         <div className="d-flex flex-wrap justify-content-between align-items-center">
-          <Button className="mt-3" variant="primary" type="submit">
-            Start
+          <Button
+            className="mt-3"
+            variant="primary"
+            type="submit"
+            disabled={scraping}
+          >
+            {
+              scraping && <Spinner animation="border" role="status" size="sm">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+            }{" "}
+            {scraping ? `Scraping` : `Start`}
           </Button>
           {error && <label className="error mt-3">{error}</label>}
         </div>
