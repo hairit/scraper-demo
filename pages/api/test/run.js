@@ -2,7 +2,7 @@ const { until, By, Builder, Browser } = require("selenium-webdriver");
 
 export default async function handler(req, res) {
   try {
-    const driver = await new Builder().forBrowser(Browser.FIREFOX).build();
+    const driver = await new Builder().forBrowser(Browser.INTERNET_EXPLORER).build();
     await driver.get(req.query.url);
     const h1 = await driver.wait(until.elementLocated(By.xpath("//h1")), 10000);
     const title = await h1.getText();
