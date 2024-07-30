@@ -40,7 +40,9 @@ export default function Home() {
     }
     setScraping(true);
     await fetch(
-      `/api/scrape/run?url=${scrapedURL}&from=${dateRange.from.toISOString()}&to=${dateRange.to.toISOString()}`
+      `/api/scrape/run?url=${encodeURIComponent(
+        scrapedURL
+      )}&from=${dateRange.from.toISOString()}&to=${dateRange.to.toISOString()}`
     )
       .then((response) => response.text())
       .then((text) => {
