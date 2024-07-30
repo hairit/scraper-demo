@@ -13,7 +13,11 @@ export default function Home() {
   const [password, setPassword] = useState("Scraperdemo124");
   const [dateRange, setDateRange] = useState({});
   const [scraping, setScraping] = useState(false);
-  const scrapedURL = `${window.location.href}candidates`;
+  const [scrapedURL, setScrapedURL] = useState("");
+
+  useEffect(() => {
+    setScrapedURL(`${window.location.href}candidates`);
+  }, []);
 
   useEffect(() => {
     setError("");
