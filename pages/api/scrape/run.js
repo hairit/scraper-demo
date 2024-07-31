@@ -1,5 +1,6 @@
 const moment = require("moment");
 const { parse } = require("json2csv");
+const { sendMail } = require("../../utilities/mailer");
 const { until, By, Builder, Browser } = require("selenium-webdriver");
 
 const scrapeStudentsIwsp = async (name) => {
@@ -81,10 +82,10 @@ const run = async (req) => {
   const driver = await new Builder().forBrowser(Browser.CHROME).build();
   await driver.get(req.query.url);
 
-  const from = new Date(req.query.from);
-  const yearFrom = moment(from).format("YYYY");
-  const monthFrom = moment(from).format("MMM");
-  const dateFrom = moment(from).format("YYYY-MM-DD");
+  const from = moment(new Date(req.query.from));
+  const yearFrom = from.format("YYYY");
+  const monthFrom = from.format("MMM");
+  const dateFrom = from.format("YYYY-MM-DD");
 
   const dateRangeStart = await driver.findElement(
     By.css('input[date-range="start"]')
@@ -129,10 +130,10 @@ const run = async (req) => {
 
   (await getYearHeaders(driver))[0].click();
 
-  const to = new Date(req.query.to);
-  const yearTo = moment(to).format("YYYY");
-  const monthTo = moment(to).format("MMM");
-  const dateTo = moment(to).format("YYYY-MM-DD");
+  const to = moment(new Date(req.query.to));
+  const yearTo = to.format("YYYY");
+  const monthTo = to.format("MMM");
+  const dateTo = to.format("YYYY-MM-DD");
 
   yearPicker = await getPicker(
     driver,
@@ -219,7 +220,7 @@ const run = async (req) => {
     await driver.actions().move({ origin: nextBtn }).click().perform();
   }
 
-  return data;
+  return { data, from, to };
 };
 
 const getPicker = async (driver, pickerClass) => {
@@ -298,12 +299,28 @@ const delay = (seconds) => {
 
 export default async function handler(req, res) {
   run(req)
-    .then((data) => {
+    .then(({ data, from, to }) => {
       const csv = parse(data);
       res.setHeader("Content-Type", "text/csv");
       res.setHeader(
         "Content-Disposition",
         "attachment; filename=data-scraped.csv"
+      );
+      sendMail(
+        "tuonghai.work@gmail.com",
+        req.query.sendTo,
+        "kiettuongwork@gmail.com",
+        "",
+        "Scheduled task completed",
+        `<p>Hi, there is ${data.length} record(s) exported. Please download the csv file.</p><br /><strong>Regards,</strong><br /><strong>Support team</strong>`,
+        [
+          {
+            filename: `scraped-candidates-${from.format(
+              "MM-DD-YYYY"
+            )}-${to.format("MM-DD-YYYY")}.csv`,
+            content: csv,
+          },
+        ]
       );
       return res.send(csv);
     })

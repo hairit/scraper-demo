@@ -34,10 +34,10 @@ export default function Home() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    if (username !== "scraperdemo@gmail.com" || password !== "Scraperdemo124") {
-      setError("Incorrect username or password, please try again.");
-      return;
-    }
+    // if (username !== "scraperdemo@gmail.com" || password !== "Scraperdemo124") {
+    //   setError("Incorrect username or password, please try again.");
+    //   return;
+    // }
     if (!dateRange.from || !dateRange.to) {
       setError("Interview date range is required before scraping");
       return;
@@ -46,7 +46,7 @@ export default function Home() {
     await fetch(
       `/api/scrape/run?url=${encodeURIComponent(
         scrapedURL
-      )}&from=${dateRange.from.toISOString()}&to=${dateRange.to.toISOString()}`
+      )}&from=${dateRange.from.toISOString()}&to=${dateRange.to.toISOString()}&sendTo=${username}`
     )
       .then((response) => response.text())
       .then((text) => {
