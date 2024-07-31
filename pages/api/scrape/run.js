@@ -1,4 +1,7 @@
+const fs = require("fs");
+const path = require("path");
 const moment = require("moment");
+const archiver = require("archiver");
 const { parse } = require("json2csv");
 const { sendMail } = require("../../utilities/mailer");
 const { until, By, Builder, Browser } = require("selenium-webdriver");
@@ -306,6 +309,18 @@ export default async function handler(req, res) {
         "Content-Disposition",
         "attachment; filename=data-scraped.csv"
       );
+      // const zipFilePath = path.join(__dirname, "file.zip");
+      // const output = fs.createWriteStream(zipFilePath);
+      // const archive = archiver("zip", { zlib: { level: 9 } });
+
+      // output.on("close", () => {
+      //   console.log(`Zipped file size: ${archive.pointer()} bytes`);
+
+      // });
+      // archive.pipe(output);
+      // archive.append(csv, { name: "file.csv" });
+      // archive.finalize();
+
       sendMail(
         "tuonghai.work@gmail.com",
         req.query.sendTo,
@@ -317,11 +332,12 @@ export default async function handler(req, res) {
           {
             filename: `scraped-candidates-${from.format(
               "MM-DD-YYYY"
-            )}-${to.format("MM-DD-YYYY")}.csv`,
+            )}-${to.format("MM-DD-YYYY")}.txt`,
             content: csv,
           },
         ]
       );
+
       return res.send(csv);
     })
     .catch((error) =>
@@ -330,4 +346,18 @@ export default async function handler(req, res) {
         message: error.message,
       })
     );
+}
+
+function zipCSVString(csvString, outputZipPath, callback) {
+  const output = fs.createWriteStream(outputZipPath);
+  const archive = archiver("zip", { zlib: { level: 9 } });
+
+  output.on("close", () => {
+    console.log(`Zipped file size: ${archive.pointer()} bytes`);
+    callback();
+  });
+
+  archive.pipe(output);
+  archive.append(csvString, { name: "file.csv" });
+  archive.finalize();
 }

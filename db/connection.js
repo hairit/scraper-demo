@@ -4,10 +4,9 @@ let connected = false;
 
 const connect = async () => {
   mongoose
-    .connect(`mongodb://0.0.0.0:27017/iwsp`, {
-      useUnifiedTopology: true,
-      useNewUrlParser: true,
-    })
+    .connect(
+      `mongodb+srv://tuonghaiwork:tuonghaimdb@tuonghaiwork.gaaubic.mongodb.net/?retryWrites=true&w=majority&appName=tuonghaiwork`
+    )
     .then(() => {
       connected = true;
       console.log("Contected to DB!");
