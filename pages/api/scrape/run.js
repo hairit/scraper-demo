@@ -1,7 +1,4 @@
-const fs = require("fs");
-const path = require("path");
 const moment = require("moment");
-const archiver = require("archiver");
 const { parse } = require("json2csv");
 const { sendMail } = require("../../utilities/mailer");
 const { until, By, Builder, Browser } = require("selenium-webdriver");
@@ -346,18 +343,4 @@ export default async function handler(req, res) {
         message: error.message,
       })
     );
-}
-
-function zipCSVString(csvString, outputZipPath, callback) {
-  const output = fs.createWriteStream(outputZipPath);
-  const archive = archiver("zip", { zlib: { level: 9 } });
-
-  output.on("close", () => {
-    console.log(`Zipped file size: ${archive.pointer()} bytes`);
-    callback();
-  });
-
-  archive.pipe(output);
-  archive.append(csvString, { name: "file.csv" });
-  archive.finalize();
 }
