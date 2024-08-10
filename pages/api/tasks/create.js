@@ -1,5 +1,6 @@
 const moment = require("moment");
 const cronJob = require("../../../lib/cronJobs/cronJob");
+import { connect, connected } from "../../../db/connection";
 const { CronJobSettingStatus } = require("../../../lib/global");
 const modelSchema = require("../../../db/models/CronJobSetting");
 
@@ -21,6 +22,9 @@ function ConvertToCronStyle(type, startTime) {
 
 export default async function handler(req, res) {
   try {
+    if (!connected) {
+      await connect();
+    }
     const taskName = req.body.taskName.trim();
     var regex = new RegExp(["^", taskName, "$"].join(""), "i");
     const existItem = await modelSchema.findOne({

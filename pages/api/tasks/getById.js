@@ -1,7 +1,11 @@
+import { connect, connected } from "../../../db/connection";
 const modelSchema = require("../../../db/models/CronJobSetting");
 
 export default async function handler(req, res) {
   try {
+    if (!connected) {
+      await connect();
+    }
     const item = await modelSchema
       .findById(req.query.id)
       .select("-__v -startTime");
