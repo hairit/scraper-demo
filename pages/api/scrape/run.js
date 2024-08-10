@@ -1,5 +1,6 @@
 const moment = require("moment");
 const { parse } = require("json2csv");
+import { sendMail } from "../../../utilities/mailer";
 const { until, By, Builder, Browser } = require("selenium-webdriver");
 
 const scrapeStudentsIwsp = async (name) => {
@@ -317,22 +318,22 @@ export default async function handler(req, res) {
       // archive.append(csv, { name: "file.csv" });
       // archive.finalize();
 
-      // sendMail(
-      //   "tuonghai.work@gmail.com",
-      //   req.query.sendTo,
-      //   "kiettuongwork@gmail.com",
-      //   "",
-      //   "Scheduled task completed",
-      //   `<p>Hi, there is ${data.length} record(s) exported. Please download the csv file.</p><br /><strong>Regards,</strong><br /><strong>Support team</strong>`,
-      //   [
-      //     {
-      //       filename: `scraped-candidates-${from.format(
-      //         "MM-DD-YYYY"
-      //       )}-${to.format("MM-DD-YYYY")}.txt`,
-      //       content: csv,
-      //     },
-      //   ]
-      // );
+      sendMail(
+        "tuonghai.work@gmail.com",
+        req.query.sendTo,
+        "",
+        "",
+        "Scheduled task completed",
+        `<p>Hi, there is ${data.length} record(s) exported. Please download the csv file.</p><br /><strong>Regards,</strong><br /><strong>Support team</strong>`,
+        [
+          {
+            filename: `scraped-candidates-${from.format(
+              "MM-DD-YYYY"
+            )}-${to.format("MM-DD-YYYY")}.txt`,
+            content: csv,
+          },
+        ]
+      );
 
       return res.send(csv);
     })
