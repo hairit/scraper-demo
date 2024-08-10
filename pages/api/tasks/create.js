@@ -1,6 +1,6 @@
 const moment = require("moment");
-const cronJob = require("../../cronJobs/cronJob");
-const { CronJobSettingStatus } = require("../../global");
+const cronJob = require("../../../lib/cronJobs/cronJob");
+const { CronJobSettingStatus } = require("../../../lib/global");
 const modelSchema = require("../../../db/models/CronJobSetting");
 
 const typeCronJob = {
