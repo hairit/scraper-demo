@@ -22,10 +22,6 @@ const create = () =>
       type: String,
       require: true,
     },
-    beforeDays: {
-      type: Number,
-      default: 0,
-    },
     status: {
       type: String,
       require: true,

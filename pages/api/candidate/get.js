@@ -1,4 +1,4 @@
-import { connect, connected } from "../../../db/connection";
+const { connect, connected } = require("../../../db/connection");
 import modelSchema from "../../../db/models/Candidate";
 
 export default async function handler(req, res) {

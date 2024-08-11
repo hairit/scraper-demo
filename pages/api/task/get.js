@@ -1,4 +1,4 @@
-import { connect, connected } from "../../../db/connection";
+const { connect, connected } = require("../../../db/connection");
 const modelSchema = require("../../../db/models/CronJobSetting");
 
 export default async function handler(req, res) {
@@ -14,7 +14,7 @@ export default async function handler(req, res) {
       });
     }
 
-    return res.json({ result: "OK", data: parsedItems });
+    return res.json({ result: "OK", items: parsedItems });
   } catch (error) {
     return res.json({ result: "ERROR", message: error.message });
   }

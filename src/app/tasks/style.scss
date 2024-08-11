@@ -1,0 +1,46 @@
+.job-update-icons {
+  margin: auto 4px;
+  color: #d23638;
+  font-size: 20px;
+  cursor: pointer;
+  :hover {
+    color: #ed8586;
+  }
+}
+
+.task-name-link {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+  &:hover {
+    color: #2571e4;
+  }
+}
+
+.job-columns {
+  font-weight: 500;
+  color: #6e6e6e;
+}
+
+.job-status-label {
+  width: 90px;
+  //padding: 5px 10px;
+  padding: 5px 0px;
+  text-align: center;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 4px;
+}
+
+.stopped-status-label {
+  background-color: #d23638;
+}
+
+.running-status-label {
+  background-color: #198754;
+}
+
+.scheduled-status-label {
+  background-color: #3b428a;
+}

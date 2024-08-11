@@ -82,7 +82,7 @@ export default function Home() {
   };
 
   return (
-    <div className="scrape-config">
+    <div className="form-background">
       <Form className="scrape-form" onSubmit={onSubmit}>
         <h1 className="mb-4">Scraping Configuration</h1>
         <Form.Group className="mb-3" controlId="formBasicEmail">

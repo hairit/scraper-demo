@@ -1,24 +1,9 @@
 const moment = require("moment");
 const cronJob = require("../../../lib/cronJobs/cronJob");
-import { connect, connected } from "../../../db/connection";
+const { ConvertToCronStyle } = require("../../../utilities");
 const { CronJobSettingStatus } = require("../../../lib/global");
+const { connect, connected } = require("../../../db/connection");
 const modelSchema = require("../../../db/models/CronJobSetting");
-
-const typeCronJob = {
-  Hourly: "Hourly",
-  Daily: "Daily",
-};
-
-function ConvertToCronStyle(type, startTime) {
-  const time = startTime.split(":");
-  let cronStyle = "0 * * * *";
-  if (type == typeCronJob.Hourly) {
-    cronStyle = `${time[1]} * * * *`;
-  } else if (type == typeCronJob.Daily) {
-    cronStyle = `${time[1]} ${time[0]} * * *`;
-  }
-  return cronStyle;
-}
 
 export default async function handler(req, res) {
   try {
@@ -48,7 +33,6 @@ export default async function handler(req, res) {
       startDateTime: req.body.startDateTime,
       linkToReport: req.body.linkToReport,
       stepSize: req.body.stepSize,
-      beforeDays: req.body.beforeDays,
     });
     newItem.save((exception, savedJob) => {
       if (exception) {

@@ -83,7 +83,7 @@ export default function Page() {
 
   return (
     <div className="container-fluid">
-      <h1 className="page-title">Candidates</h1>
+      <h2 className="page-title">Candidates</h2>
       <div className="row">
         <div className="col-lg-4">
           <DatePicker.RangePicker
@@ -104,7 +104,7 @@ export default function Page() {
         paginationRowsPerPageOptions={[10, 20, 40, 80, 100]}
         onChangePage={onChangePage}
         onChangeRowsPerPage={onChangeRowsPerPage}
-      ></DataTable>
+      />
     </div>
   );
 }

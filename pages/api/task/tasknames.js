@@ -1,4 +1,4 @@
-import { connect, connected } from "../../../db/connection";
+const { connect, connected } = require("../../../db/connection");
 const modelSchema = require("../../../db/models/CronJobSetting");
 
 export default async function handler(req, res) {
