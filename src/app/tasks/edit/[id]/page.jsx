@@ -47,25 +47,25 @@ export default function Page() {
   };
 
   const onSubmit = (e) => {
-    e.preventDefault();
-    setLoading(true);
-    fetch(`/api/task/edit?id=${id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    })
-      .then((response) => response.json())
-      .then((responseData) => {
-        if (responseData.result === "OK") {
-          alert("Saved successfully");
-        } else {
-          alert("Failed");
-        }
-      })
-      .catch((e) => console.log(e.message))
-      .finally(() => setLoading(false));
+    // e.preventDefault();
+    // setLoading(true);
+    // fetch(`/api/task/edit?id=${id}`, {
+    //   method: "PATCH",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify(formData),
+    // })
+    //   .then((response) => response.json())
+    //   .then((responseData) => {
+    //     if (responseData.result === "OK") {
+    //       alert("Saved successfully");
+    //     } else {
+    //       alert("Failed");
+    //     }
+    //   })
+    //   .catch((e) => console.log(e.message))
+    //   .finally(() => setLoading(false));
   };
 
   const onChange = (e) => {
