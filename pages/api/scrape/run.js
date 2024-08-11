@@ -3,86 +3,12 @@ const { parse } = require("json2csv");
 import { sendMail } from "../../../utilities/mailer";
 const { until, By, Builder, Browser } = require("selenium-webdriver");
 
-const scrapeStudentsIwsp = async (name) => {
-  const driver = await new Builder().forBrowser(Browser.CHROME).build();
-  await driver.get("https://growpro.fxwebapps.com/auth/login");
-  try {
-    // Find login elements
-    const loginFormLocated = until.elementLocated(By.className("form-default"));
-    const loginForm = await driver.wait(loginFormLocated, 10000);
-    const emailInput = loginForm.findElement(By.id("email"));
-    const passwordInput = loginForm.findElement(By.id("password"));
-    // Login
-    await emailInput.sendKeys("faisalfxmweb+pa1@gmail.com");
-    await passwordInput.sendKeys("Password@12345");
-    await loginForm.submit();
-    // Navigate to users page
-    const usersNav = await driver.wait(
-      until.elementLocated(By.css('a[href="/portal/user"]')),
-      10000
-    );
-    await usersNav.click();
-
-    if (name && name.trim()) {
-      const filterInput = await driver.wait(
-        until.elementLocated(By.css("input[type=text]")),
-        10000
-      );
-      await filterInput.sendKeys(name);
-      await delay(2000);
-    }
-
-    const perPageDropdown = await driver.wait(
-      until.elementLocated(By.xpath('//select[contains(@class, "sc-cwSeag")]')),
-      10000
-    );
-    const perPageItem = perPageDropdown.findElement(
-      By.xpath("./option[@selected]")
-    );
-    const perPage = await perPageItem.getText();
-    const pagingText = await driver
-      .findElement(By.className("sc-bYMpWt sc-kMjNwy KQKvZ hecCuC"))
-      .getText();
-    const pagingInfo = pagingText
-      .split("of")
-      .map((t) => t.trim())
-      .filter((t) => t);
-    const pages = Math.ceil(parseInt(pagingInfo[1]) / perPage);
-
-    let data = [];
-    for (let page = 0; page < pages; page++) {
-      await delay(2000);
-
-      const rows = await driver.wait(
-        until.elementsLocated(By.className("rdt_TableRow")),
-        10000
-      );
-      for (let i = 0; i < rows.length; i++) {
-        const row = rows[i];
-        data.push({
-          name: await row.findElement(By.xpath("./div[2]")).getText(),
-          organization: await row.findElement(By.xpath("./div[3]")).getText(),
-          programme: await row.findElement(By.xpath("./div[4]")).getText(),
-          email: await row.findElement(By.xpath("./div[5]")).getText(),
-        });
-      }
-      const nextBtn = await driver.findElement(By.id("pagination-next-page"));
-      await driver.actions().move({ origin: nextBtn }).click().perform();
-    }
-    console.table(data);
-  } catch (error) {
-    console.log(error);
-  } finally {
-    //driver.quit();
-  }
-};
-
-const run = async (req) => {
+export const run = async (url, start, end) => {
   const startProcess = new Date();
   const driver = await new Builder().forBrowser(Browser.CHROME).build();
-  await driver.get(req.query.url);
+  await driver.get(url);
 
-  const from = moment(new Date(req.query.from));
+  const from = moment(new Date(start));
   const yearFrom = from.format("YYYY");
   const monthFrom = from.format("MMM");
   const dateFrom = from.format("YYYY-MM-DD");
@@ -91,8 +17,10 @@ const run = async (req) => {
     By.css('input[date-range="start"]')
   );
   await dateRangeStart.click();
+  await delay(1000);
 
   (await getYearHeaders(driver))[0].click();
+  await delay(1000);
 
   let yearPicker = await getPicker(
     driver,
@@ -109,6 +37,7 @@ const run = async (req) => {
     );
     while (!selectedYearFrom) {
       await yearLookupBtn.click();
+      await delay(1000);
       selectedYearFrom = await getTargetYearItem(yearPicker, yearFrom);
     }
   }
@@ -120,6 +49,7 @@ const run = async (req) => {
   );
   const selectedMonthFrom = await getTargetMonthItem(monthPicker, monthFrom);
   await selectedMonthFrom.click();
+  await delay(1000);
 
   let datePicker = await getPicker(
     driver,
@@ -127,10 +57,12 @@ const run = async (req) => {
   );
   const selectedDateFrom = await getTargetDateItem(datePicker, dateFrom);
   await selectedDateFrom.click();
+  await delay(1000);
 
-  (await getYearHeaders(driver))[0].click();
+  (await getYearHeaders(driver))[1].click();
+  await delay(1000);
 
-  const to = moment(new Date(req.query.to));
+  const to = moment(new Date(end));
   const yearTo = to.format("YYYY");
   const monthTo = to.format("MMM");
   const dateTo = to.format("YYYY-MM-DD");
@@ -149,6 +81,7 @@ const run = async (req) => {
     );
     while (!selectedYearTo) {
       await yearLookupBtn.click();
+      await delay(1000);
       selectedYearTo = await getTargetYearItem(yearPicker, yearTo);
     }
   }
@@ -161,6 +94,7 @@ const run = async (req) => {
 
   const selectedMonthTo = await getTargetMonthItem(monthPicker, monthTo);
   await selectedMonthTo.click();
+  await delay(1000);
 
   datePicker = await getPicker(
     driver,
@@ -169,6 +103,7 @@ const run = async (req) => {
 
   const selectedDateTo = await getTargetDateItem(datePicker, dateTo);
   await selectedDateTo.click();
+  await delay(1000);
 
   const perPageDropdown = await driver.wait(
     until.elementLocated(By.xpath('//select[contains(@class, "sc-bSlUec")]')),
@@ -298,7 +233,7 @@ const delay = (seconds) => {
 };
 
 export default async function handler(req, res) {
-  run(req)
+  run(req.query.url, req.query.from, req.query.to)
     .then(({ data, from, to }) => {
       const csv = parse(data);
       res.setHeader("Content-Type", "text/csv");
@@ -319,11 +254,11 @@ export default async function handler(req, res) {
       // archive.finalize();
 
       sendMail(
-        "tuonghai.work@gmail.com",
-        req.query.sendTo,
+        "",
+        req.query.sendTo ?? "tuonghai.contact@gmail.com",
         "",
         "",
-        "Scheduled task completed",
+        `[Temu] - Scraping data on package details completed > [${data.length}] records extracted`,
         `<p>Hi, there is ${data.length} record(s) exported. Please download the csv file.</p><br /><strong>Regards,</strong><br /><strong>Support team</strong>`,
         [
           {

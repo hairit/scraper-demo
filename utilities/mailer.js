@@ -6,14 +6,14 @@ export const sendMail = (from, to, cc, bcc, subject, body, attachments) => {
     secureConnection: false,
     port: 587,
     auth: {
-      user: `tuonghai.work@gmail.com`,
-      pass: `wvhkfznpnetmxrlo`,
+      user: `scraping.schedule@gmail.com`,
+      pass: `xowpbzeacwqmlnay`,
     },
   });
   var inlineBase64 = require("nodemailer-plugin-inline-base64");
   transporter.use("compile", inlineBase64({ cidPrefix: "somePrefix_" }));
   let mailOptions = {
-    from: from,
+    from: from ?? "scraping.schedule@gmail.com",
     to: to, // list of receivers
     cc: cc,
     bcc: bcc,

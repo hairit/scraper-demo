@@ -18,33 +18,32 @@ export default async function handler(req, res) {
     }
     const startTime = moment(req.body.startDateTime).format("HH:mm");
     const cronStyle = ConvertToCronStyle(req.body.typeCronJob, startTime);
-    await modelSchema.updateOne(
-      { _id: req.query.id },
-      {
-        $set: {
-          cronStyle: cronStyle,
-          description: req.body.description,
-          typeCronJob: req.body.typeCronJob,
-          startTime: startTime,
-          startDateTime: req.body.startDateTime,
-          linkToReport: req.body.linkToReport,
-          stepSize: req.body.stepSize,
-          timeRun: 0,
-          beforeDays: req.body.beforeDays,
-        },
-      },
-      (err) => {
-        if (!err) {
-          if (
-            existItem.cronStyle !== cronStyle &&
-            existItem.status != CronJobSettingStatus.Stopped
-          ) {
-            const config = { ...existItem._doc, cronStyle: cronStyle };
-            cronJob.RescheduleCronJob(config);
-          }
+    await modelSchema
+      .updateOne(
+        { _id: req.query.id },
+        {
+          $set: {
+            cronStyle: cronStyle,
+            description: req.body.description,
+            typeCronJob: req.body.typeCronJob,
+            startTime: startTime,
+            startDateTime: req.body.startDateTime,
+            linkToReport: req.body.linkToReport,
+            stepSize: req.body.stepSize,
+            timeRun: 0,
+            beforeDays: req.body.beforeDays,
+          },
         }
-      }
-    );
+      )
+      .then(() => {
+        if (
+          existItem.cronStyle !== cronStyle &&
+          existItem.status != CronJobSettingStatus.Stopped
+        ) {
+          const config = { ...existItem._doc, cronStyle: cronStyle };
+          cronJob.RescheduleCronJob(config);
+        }
+      });
     return res.json({ result: "OK" });
   } catch (error) {
     return res.json({ result: "ERROR", message: error.message });
