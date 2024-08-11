@@ -258,7 +258,7 @@ export default async function handler(req, res) {
         req.query.sendTo ?? "tuonghai.contact@gmail.com",
         "",
         "",
-        `[Temu] - Scraping data on package details completed > [${data.length}] records extracted`,
+        `[Temu] - Scraping data on package details completed > [${data.length}] record(s) extracted`,
         `<p>Hi, there is ${data.length} record(s) exported. Please download the csv file.</p><br /><strong>Regards,</strong><br /><strong>Support team</strong>`,
         [
           {
