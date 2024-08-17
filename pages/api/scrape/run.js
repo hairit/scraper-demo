@@ -1,8 +1,11 @@
+import axios from "axios";
+import { sendMail } from "../../../utilities/mailer";
+
 const fs = require("fs");
 const path = require("path");
 const moment = require("moment");
+const FormData = require("form-data");
 const { parse } = require("json2csv");
-import { sendMail } from "../../../utilities/mailer";
 const { until, By, Builder, Browser } = require("selenium-webdriver");
 
 export const run = async (url, start, end) => {
@@ -252,20 +255,21 @@ export default async function handler(req, res) {
           return;
         }
         const formData = new FormData();
-        formData.append("csv", fs.createReadStream(filePath));
-        fetch(`${req.query.domain}/api/scrape/upload`, {
-          method: "POST",
-          body: formData,
-        })
+        formData.append("csv", fs.createReadStream(filePath), {
+          filename: fileName,
+          contentType: "text/csv",
+        });
+        axios
+          .post(`${req.query.domain}/api/scrape/upload`, formData)
           .then(() => {
-            const fileUrl = `${req.query.url}/uploads/${fileName}`;
+            const fileUrl = `${req.query.domain}/uploads/${fileName}`;
             sendMail(
               "",
               req.query.sendTo ?? "tuonghai.contact@gmail.com",
               "",
               "",
               `[Temu] - Scraping data on package details completed > [${data.length}] record(s) extracted`,
-              `<p>Hi, there is ${data.length} record(s) exported. Please download the csv file <a target="_blank" href="${fileUrl}">here</a><br />.</p><br />` +
+              `<p>Hi, there is ${data.length} record(s) exported. Please download the csv file <a target="_blank" href="${fileUrl}">here</a>.</p><br />` +
                 `<strong>Regards,</strong><br /><strong>Support team</strong>`
             );
           })
