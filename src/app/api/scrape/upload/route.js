@@ -17,9 +17,3 @@ export async function POST(req) {
     return res.json({ result: "ERROR", error: error });
   }
 }
-
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
