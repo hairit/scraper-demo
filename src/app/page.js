@@ -42,7 +42,9 @@ export default function Home() {
     await fetch(
       `/api/scrape/run?url=${encodeURIComponent(
         scrapedURL
-      )}&from=${dateRange.from.toISOString()}&to=${dateRange.to.toISOString()}&sendTo=${username}`
+      )}&from=${dateRange.from.toISOString()}&to=${dateRange.to.toISOString()}&sendTo=${username}&domain=${
+        window.location.origin
+      }`
     )
       .then((response) => response.text())
       .then((text) => {

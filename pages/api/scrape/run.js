@@ -1,3 +1,5 @@
+const fs = require("fs");
+const path = require("path");
 const moment = require("moment");
 const { parse } = require("json2csv");
 import { sendMail } from "../../../utilities/mailer";
@@ -236,40 +238,47 @@ export default async function handler(req, res) {
   run(req.query.url, req.query.from, req.query.to)
     .then(({ data, from, to }) => {
       const csv = parse(data);
+      const fileName = `data-${from.format("MM-DD-YYYY")}-${to.format(
+        "MM-DD-YYYY"
+      )}.csv`;
+      const filePath = path.join(
+        __dirname,
+        "../../../../../",
+        `public/temp/${fileName}`
+      );
+      fs.writeFile(filePath, csv, (error) => {
+        if (error) {
+          console.log(`Could not save temp file:`, error);
+          return;
+        }
+        const formData = new FormData();
+        formData.append("csv", fs.createReadStream(filePath));
+        fetch(`${req.query.domain}/api/scrape/upload`, {
+          method: "POST",
+          body: formData,
+        })
+          .then(() => {
+            const fileUrl = `${req.query.url}/uploads/${fileName}`;
+            sendMail(
+              "",
+              req.query.sendTo ?? "tuonghai.contact@gmail.com",
+              "",
+              "",
+              `[Temu] - Scraping data on package details completed > [${data.length}] record(s) extracted`,
+              `<p>Hi, there is ${data.length} record(s) exported. Please download the csv file <a target="_blank" href="${fileUrl}">here</a><br />.</p><br />` +
+                `<strong>Regards,</strong><br /><strong>Support team</strong>`
+            );
+          })
+          .catch((error) => console.log(error))
+          .finally(() => {
+            fs.unlink(filePath, (e) => {
+              if (e) console.log("Could not delete the file after execute.");
+            });
+          });
+      });
+
       res.setHeader("Content-Type", "text/csv");
-      res.setHeader(
-        "Content-Disposition",
-        "attachment; filename=data-scraped.csv"
-      );
-      // const zipFilePath = path.join(__dirname, "file.zip");
-      // const output = fs.createWriteStream(zipFilePath);
-      // const archive = archiver("zip", { zlib: { level: 9 } });
-
-      // output.on("close", () => {
-      //   console.log(`Zipped file size: ${archive.pointer()} bytes`);
-
-      // });
-      // archive.pipe(output);
-      // archive.append(csv, { name: "file.csv" });
-      // archive.finalize();
-
-      sendMail(
-        "",
-        req.query.sendTo ?? "tuonghai.contact@gmail.com",
-        "",
-        "",
-        `[Temu] - Scraping data on package details completed > [${data.length}] record(s) extracted`,
-        `<p>Hi, there is ${data.length} record(s) exported. Please download the csv file.</p><br /><strong>Regards,</strong><br /><strong>Support team</strong>`,
-        [
-          {
-            filename: `scraped-candidates-${from.format(
-              "MM-DD-YYYY"
-            )}-${to.format("MM-DD-YYYY")}.txt`,
-            content: csv,
-          },
-        ]
-      );
-
+      res.setHeader("Content-Disposition", `attachment; filename=${fileName}`);
       return res.send(csv);
     })
     .catch((error) =>
