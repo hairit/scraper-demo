@@ -9,7 +9,7 @@ import Spinner from "react-bootstrap/Spinner";
 
 export default function Home() {
   const [error, setError] = useState("");
-  const [username, setUsername] = useState("scraperdemo@gmail.com");
+  const [username, setUsername] = useState("scraping.schedule@gmail.com");
   const [password, setPassword] = useState("Scraperdemo124");
   const [dateRange, setDateRange] = useState({});
   const [scraping, setScraping] = useState(false);
@@ -34,10 +34,6 @@ export default function Home() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    // if (username !== "scraperdemo@gmail.com" || password !== "Scraperdemo124") {
-    //   setError("Incorrect username or password, please try again.");
-    //   return;
-    // }
     if (!dateRange.from || !dateRange.to) {
       setError("Interview date range is required before scraping");
       return;
