@@ -13,9 +13,11 @@ export default function Home() {
   const [password, setPassword] = useState("Scraperdemo124");
   const [dateRange, setDateRange] = useState({});
   const [scraping, setScraping] = useState(false);
+  const [domain, setDomain] = useState("");
   const [scrapedURL, setScrapedURL] = useState("");
 
   useEffect(() => {
+    setDomain(window.location.href);
     setScrapedURL(`${window.location.href}candidates`);
   }, []);
 
@@ -42,9 +44,7 @@ export default function Home() {
     await fetch(
       `/api/scrape/run?url=${encodeURIComponent(
         scrapedURL
-      )}&from=${dateRange.from.toISOString()}&to=${dateRange.to.toISOString()}&sendTo=${username}&domain=${
-        window.location.origin
-      }`
+      )}&from=${dateRange.from.toISOString()}&to=${dateRange.to.toISOString()}&sendTo=${username}&domain=${domain}`
     )
       .then((response) => response.text())
       .then((text) => {
