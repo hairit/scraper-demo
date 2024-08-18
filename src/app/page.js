@@ -13,12 +13,10 @@ export default function Home() {
   const [password, setPassword] = useState("Scraperdemo124");
   const [dateRange, setDateRange] = useState({});
   const [scraping, setScraping] = useState(false);
-  const [domain, setDomain] = useState("");
   const [scrapedURL, setScrapedURL] = useState("");
 
   useEffect(() => {
-    setDomain(window.location.href);
-    setScrapedURL(`${window.location.href}candidates`);
+    setScrapedURL(`https://main--scraper-demo.netlify.app/candidates`);
   }, []);
 
   useEffect(() => {
@@ -44,7 +42,7 @@ export default function Home() {
     await fetch(
       `/api/scrape/run?url=${encodeURIComponent(
         scrapedURL
-      )}&from=${dateRange.from.toISOString()}&to=${dateRange.to.toISOString()}&sendTo=${username}&domain=${domain}`
+      )}&from=${dateRange.from.toISOString()}&to=${dateRange.to.toISOString()}&sendTo=${username}`
     )
       .then((response) => response.text())
       .then((text) => {
@@ -82,9 +80,11 @@ export default function Home() {
   return (
     <div className="form-background">
       <Form className="scrape-form" onSubmit={onSubmit}>
-        <h1 className="mb-4">Scraping Configuration</h1>
+        <h1 className="mb-5 text-center">Scraping Configuration</h1>
         <Form.Group className="mb-3" controlId="formBasicEmail">
-          <Form.Label>Username</Form.Label>
+          <Form.Label>
+            Email (receive notification after scraping completed)
+          </Form.Label>
           <Form.Control
             type="email"
             name="username"
@@ -95,7 +95,7 @@ export default function Home() {
           />
         </Form.Group>
 
-        <Form.Group className="mb-3" controlId="formBasicPassword">
+        {/* <Form.Group className="mb-3" controlId="formBasicPassword">
           <Form.Label>Password</Form.Label>
           <Form.Control
             type="password"
@@ -105,7 +105,7 @@ export default function Home() {
             value={password}
             onChange={onChange}
           />
-        </Form.Group>
+        </Form.Group> */}
 
         <Form.Group className="mb-3">
           <Form.Label>Export/Scrape by interview date range</Form.Label>

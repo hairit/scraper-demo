@@ -17,7 +17,7 @@ export default function Page() {
   const route = useRouter();
   const [items, setItems] = useState([]);
 
-  // useEffect(() => reload(), []);
+  useEffect(() => reload(), []);
 
   const reload = () => {
     fetch(`/api/task/get`)
